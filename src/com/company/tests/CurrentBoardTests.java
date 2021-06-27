@@ -5,7 +5,10 @@ import org.openqa.selenium.WebElement;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import java.util.List;
+
 public class CurrentBoardTests extends TestBase {
+    private static final int INDEX = 1;
 
     @BeforeMethod
     public void initTest() throws InterruptedException {
@@ -39,7 +42,7 @@ public class CurrentBoardTests extends TestBase {
     }
 
     @Test
-    public void newListCreatingTest() throws InterruptedException {  // Marina's option
+    public void newListCreatingTest() throws InterruptedException {
         // press 'Add list button'
         WebElement createListButton = driver.findElement(By.cssSelector(".placeholder"));
         createListButton.click();
@@ -70,6 +73,73 @@ public class CurrentBoardTests extends TestBase {
         Thread.sleep(3000);
         driver.findElement(By.cssSelector(".js-cancel")).click();
         Thread.sleep(3000);
+    }
+
+    @Test
+    public void listDelete () throws InterruptedException {
+        List<WebElement> list = driver.findElements(By.className("js-list-content"));
+        if (list.size() == 0) {
+            // newListCreatingTest();
+            WebElement createListButton = driver.findElement(By.cssSelector(".placeholder"));
+            createListButton.click();
+            WebElement nameListField = driver.findElement(By.cssSelector("input[name='name']"));
+            editField(nameListField, "Test List");
+            WebElement saveListButton = driver.findElement(By.cssSelector(".js-save-edit"));
+            saveListButton.click();
+            Thread.sleep(2000);
+            WebElement cancelListCreatingButton = driver.findElement(By.cssSelector(".js-cancel-edit"));
+            cancelListCreatingButton.click();
+            Thread.sleep(2000);
+            list = driver.findElements(By.className("js-list-content"));
+            getRemoveList(list);
+        }
+        getRemoveList(list);
+
+    }
+
+    @Test
+    public void copyList () throws InterruptedException {
+        List<WebElement> list = driver.findElements(By.className("js-list-content"));
+        if (list.size() == 0) {
+            // newListCreatingTest();
+            WebElement createListButton = driver.findElement(By.cssSelector(".placeholder"));
+            createListButton.click();
+            WebElement nameListField = driver.findElement(By.cssSelector("input[name='name']"));
+            editField(nameListField, "Test List");
+            WebElement saveListButton = driver.findElement(By.cssSelector(".js-save-edit"));
+            saveListButton.click();
+            Thread.sleep(2000);
+            WebElement cancelListCreatingButton = driver.findElement(By.cssSelector(".js-cancel-edit"));
+            cancelListCreatingButton.click();
+            Thread.sleep(2000);
+            list = driver.findElements(By.className("js-list-content"));
+            creating(list);
+        }
+        creating(list);
+    }
+
+    public void creating(List<WebElement> list) throws InterruptedException {
+            if (INDEX <= list.size()) {
+            driver.findElements(By.className("list-header-extras")).get(INDEX - 1).click();
+            Thread.sleep(2000);
+            driver.findElement(By.xpath("//a[contains(text(),'Copy list…')]/..")).click();
+            Thread.sleep(2000);
+            WebElement nameField = driver.findElement(By.cssSelector(".js-autofocus"));
+            nameField.sendKeys("Copy test");
+            Thread.sleep(2000);
+            driver.findElement(By.cssSelector(".js-submit")).click();
+            Thread.sleep(2000);
+        }
+    }
+
+
+    public void getRemoveList(List<WebElement> list) throws InterruptedException {
+        if (INDEX <= list.size()) {
+            driver.findElements(By.className("list-header-extras")).get(INDEX - 1).click();
+            Thread.sleep(2000);
+            driver.findElement(By.xpath("//a[contains(text(), 'Archive this list')]")).click();
+            Thread.sleep(2000);
+        }
     }
 
     private void editField(WebElement field, String value) {

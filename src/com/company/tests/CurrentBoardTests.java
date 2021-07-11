@@ -1,149 +1,118 @@
 package com.company.tests;
 
+import com.company.pages.*;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
+import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import java.util.List;
 
 public class CurrentBoardTests extends TestBase {
-    private static final int INDEX = 1;
+    HomePageHelper homePage;
+    LoginPageHelper loginPage;
+    BoardsPageHelper boardsPage;
+    CurrentBoardPageHelper qa9HaifaPage;
 
     @BeforeMethod
-    public void initTest() throws InterruptedException {
-        // click "Log in" button
-        driver.findElement(By.cssSelector(".text-primary")).click();
-        Thread.sleep(5000);
-        // fill email field
-        WebElement emailField = driver.findElement(By.id("user"));
-        editField(emailField, "benhakhenn@gmail.com");
-        Thread.sleep(2000);
-        // press "Log in with Atlassian"
-        driver.findElement(By.id("login")).click();
-        Thread.sleep(4000);
+    public void initTest() {
+        homePage = new HomePageHelper(driver);
+        loginPage = new LoginPageHelper(driver);
+        boardsPage = new BoardsPageHelper(driver);
+        qa9HaifaPage = new CurrentBoardPageHelper(driver, "QA Haifa9");
 
-        // enter my own password
-        WebElement enterPassword = driver.findElement(By.id("password"));
-        editField(enterPassword, "windozesax");
-        Thread.sleep(2000);
-
-        // press log in button
-        driver.findElement(By.id("login-submit")).click();
-        Thread.sleep(12000);
-
-        // press on "QA Haifa9" board
-        driver.findElement(By.xpath("//a[@data-test-id = 'home-team-boards-tab']")).click();
-        Thread.sleep(3000);
-        // open 'QA Haifa9' board
-        driver.findElement(By.xpath("//a[@class = 'board-tile'][.//div[@title='QA Haifa9']]")).click();
-        Thread.sleep(3000);
-
+        homePage.waitUntilPageIsLoaded();
+        loginPage.openPage();
+        loginPage.waitUntilPageIsLoaded();
+        loginPage.loginAttl(LOGIN, PASSWORD);
+        boardsPage.waitUntilPageIsLoaded();
+        boardsPage.boardsButtonInWorkspacesMenuClick();
+        qa9HaifaPage.openPage();
+        qa9HaifaPage.waitUntilPageIsLoaded();
     }
 
     @Test
-    public void newListCreatingTest() throws InterruptedException {
-        // press 'Add list button'
-        WebElement createListButton = driver.findElement(By.cssSelector(".placeholder"));
-        createListButton.click();
-        // enter name of the list
-        WebElement nameListField = driver.findElement(By.cssSelector("input[name='name']"));
-        editField(nameListField, "Test List");
-        // click 'Add list' button
-        WebElement saveListButton = driver.findElement(By.cssSelector(".js-save-edit"));
-        saveListButton.click();
-        // click 'x' button to cancel new list creating
-        Thread.sleep(2000);
-        WebElement cancelListCreatingButton = driver.findElement(By.cssSelector(".js-cancel-edit"));
-        cancelListCreatingButton.click();
-        Thread.sleep(2000);
+    public void newListCreatingTest() {
+        String listTitle = "3";
+        int listsSizeBefore = qa9HaifaPage.listsQuantity();
+//        qa9HaifaPage.addNewList();
+//        qa9HaifaPage.enterNewListTitle("listTitle");
+//        qa9HaifaPage.createNewListConfirm();
+//        qa9HaifaPage.cancelElseOneNewListAdding();
+        qa9HaifaPage.newListCreating(listTitle);
+        int listsSizeAfter = qa9HaifaPage.listsQuantity();
 
+        Assert.assertEquals(listsSizeAfter, listsSizeBefore + 1, "New list wasn't created");
     }
 
     @Test
-    public void addNewCardTest () throws InterruptedException {
-        // press 'Ad a card' (Add another card)
-        WebElement addCCardButton = driver.findElement(By.cssSelector(".card-composer-container"));
-        addCCardButton.click();
-        // fill in card title
-        WebElement cardTitleField = driver.findElement(By.cssSelector(".js-card-title"));
-        editField(cardTitleField, "card title");
-        Thread.sleep(2000);
-        driver.findElement(By.cssSelector(".js-add-card")).click();
-        Thread.sleep(3000);
-        driver.findElement(By.cssSelector(".js-cancel")).click();
-        Thread.sleep(3000);
+    public void addNewCardTestByListValue () {
+        int value = 1;
+        String cardTitle = "33";
+        int cardsQuantityBefore = qa9HaifaPage.cardsQuantity();
+//        qa9HaifaPage.pressAddACardButton(value);
+//        qa9HaifaPage.enterNewCardTitle(cardTitle);
+//        qa9HaifaPage.pressAddCardButton();
+//        qa9HaifaPage.cancelCreatingElseOneNewCard();
+        qa9HaifaPage.addNewCard(value, cardTitle);
+
+        int cardsQuantityAfter = qa9HaifaPage.cardsQuantity();
+
+        Assert.assertEquals(cardsQuantityAfter, cardsQuantityBefore + 1, "New list wasn't created");
     }
 
     @Test
-    public void listDelete () throws InterruptedException {
-        List<WebElement> list = driver.findElements(By.className("js-list-content"));
-        if (list.size() == 0) {
-            // newListCreatingTest();
-            WebElement createListButton = driver.findElement(By.cssSelector(".placeholder"));
-            createListButton.click();
-            WebElement nameListField = driver.findElement(By.cssSelector("input[name='name']"));
-            editField(nameListField, "Test List");
-            WebElement saveListButton = driver.findElement(By.cssSelector(".js-save-edit"));
-            saveListButton.click();
-            Thread.sleep(2000);
-            WebElement cancelListCreatingButton = driver.findElement(By.cssSelector(".js-cancel-edit"));
-            cancelListCreatingButton.click();
-            Thread.sleep(2000);
-            list = driver.findElements(By.className("js-list-content"));
-            getRemoveList(list);
+    public void archiveListByValue () {
+        int value = 3;
+        String listTitle = "anyName";
+        int sizeBeforeArchiving = qa9HaifaPage.listsQuantity();
+        if (sizeBeforeArchiving == 0) {
+            qa9HaifaPage.newListCreating(listTitle);
+            sizeBeforeArchiving++;
         }
-        getRemoveList(list);
+        qa9HaifaPage.getArchiveListByValue(value);
 
+        int sizeAfterArchiving = qa9HaifaPage.listsQuantity();
+
+        Assert.assertEquals(sizeAfterArchiving, sizeBeforeArchiving - 1, "List wasn't archived");
     }
 
     @Test
-    public void copyList () throws InterruptedException {
-        List<WebElement> list = driver.findElements(By.className("js-list-content"));
-        if (list.size() == 0) {
-            // newListCreatingTest();
-            WebElement createListButton = driver.findElement(By.cssSelector(".placeholder"));
-            createListButton.click();
-            WebElement nameListField = driver.findElement(By.cssSelector("input[name='name']"));
-            editField(nameListField, "Test List");
-            WebElement saveListButton = driver.findElement(By.cssSelector(".js-save-edit"));
-            saveListButton.click();
-            Thread.sleep(2000);
-            WebElement cancelListCreatingButton = driver.findElement(By.cssSelector(".js-cancel-edit"));
-            cancelListCreatingButton.click();
-            Thread.sleep(2000);
-            list = driver.findElements(By.className("js-list-content"));
-            creating(list);
+    public void copyListByListValue () {
+        int value = 2;
+        String listTitle = "anyName";
+        int sizeBeforeCopying = qa9HaifaPage.listsQuantity();
+        if (sizeBeforeCopying == 0) {
+            qa9HaifaPage.newListCreating(listTitle);
+            sizeBeforeCopying++;
         }
-        creating(list);
+        qa9HaifaPage.getCreatingCopy(value);
+
+        int sizeAfterCopying = driver.findElements(By.className("js-list-content")).size();
+
+        Assert.assertEquals(sizeAfterCopying, sizeBeforeCopying + 1, "No copy of the list has been created");
+
+    // the name of copy is equals (is the same) to the name of the copied from
+        Assert.assertEquals(qa9HaifaPage.textTitleCopy(value), qa9HaifaPage.textTitleOriginal(value + 1),
+                "No copy of the list has been created");
     }
 
-    public void creating(List<WebElement> list) throws InterruptedException {
-            if (INDEX <= list.size()) {
-            driver.findElements(By.className("list-header-extras")).get(INDEX - 1).click();
-            Thread.sleep(2000);
-            driver.findElement(By.xpath("//a[contains(text(),'Copy list…')]/..")).click();
-            Thread.sleep(2000);
-            WebElement nameField = driver.findElement(By.cssSelector(".js-autofocus"));
-            nameField.sendKeys("Copy test");
-            Thread.sleep(2000);
-            driver.findElement(By.cssSelector(".js-submit")).click();
-            Thread.sleep(2000);
-        }
-    }
+//    @Test
+//    public void archiveListByName() {
+//        String name = "3";
+//        List<WebElement> titleList = qa9HaifaPage.getListsTitles();
+//        int sizeBefore = qa9HaifaPage.listsQuantity();
+//
+//        for (WebElement element : titleList) {
+//            if(element.getText().equals(name)) {
+//                element.findElement(By.cssSelector(".list-header-extras-menu")).getText("3").click();
+//            }
+//            qa9HaifaPage.chooseArchiveThisList();
+//        }
+//        int sizeAfter = qa9HaifaPage.listsQuantity();
+//
+//        Assert.assertEquals(sizeAfter, sizeBefore - 1, "List wasn't archived");
+//    }
 
-
-    public void getRemoveList(List<WebElement> list) throws InterruptedException {
-        if (INDEX <= list.size()) {
-            driver.findElements(By.className("list-header-extras")).get(INDEX - 1).click();
-            Thread.sleep(2000);
-            driver.findElement(By.xpath("//a[contains(text(), 'Archive this list')]")).click();
-            Thread.sleep(2000);
-        }
-    }
-
-    private void editField(WebElement field, String value) {
-        field.click();
-        field.sendKeys(value);
-    }
 }

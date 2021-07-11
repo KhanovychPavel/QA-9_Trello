@@ -1,55 +1,47 @@
 package com.company.tests;
 
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebElement;
+import com.company.pages.BoardsPageHelper;
+import com.company.pages.HomePageHelper;
+import com.company.pages.LoginPageHelper;
+import org.testng.Assert;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 public class LoginTests extends TestBase {
+    HomePageHelper homePage;
+    LoginPageHelper loginPage;
+    BoardsPageHelper boardsPage;
 
-    @Test
-    public void negativeLogin() throws InterruptedException {
-        // click "Log in" button
-        driver.findElement(By.cssSelector(".text-primary")).click();
-        Thread.sleep(2000);
-        // fill email field
-        WebElement emailField = driver.findElement(By.id("user"));
-        emailField.click();
-        emailField.sendKeys("romuska");
-        Thread.sleep(2000);
-        // fill password field
-        WebElement passwordField = driver.findElement(By.id("password"));
-        passwordField.click();
-        passwordField.sendKeys("gromuska");
-        Thread.sleep(2000);
-        // press "Log in" button
-        driver.findElement(By.id("login")).click();
-        Thread.sleep(2000);
-        // Output err message:
-        System.out.println("Error message: " + driver.findElements(By.cssSelector("p.error-message")).get(0).getText());
+    @BeforeMethod
+    public void initTests() {
+        homePage = new HomePageHelper(driver);
+        loginPage = new LoginPageHelper(driver);
+        boardsPage = new BoardsPageHelper(driver);
+
+        homePage.waitUntilPageIsLoaded(); // wait for "Log in" is clickable ON THE HOMEPAGE
+        loginPage.openPage(); // wait for "Log in" ON THE HOMEPAGE is clickable + find and click on "Log in"
+        loginPage.waitUntilPageIsLoaded(); // wait for "Log in" is clickable ON THE LOG IN PAGE BEFORE EMAIL & PASSWORD FIELDS FILLING
+
+    }
+
+     @Test
+    public void negativeLogin() {
+//      loginPage.fillInEmailField("romuska");
+//      loginPage.fillInPasswordField("gromuska");
+//      loginPage.submitLoginNotAtlassian();
+        loginPage.LoginNotAttl("romuska", "gromuska"); //this method replaces 3 methods above
+        Assert.assertEquals(loginPage.getErrorMessage(),
+                "There isn't an account for this username", "The error message isn't correct");
     }
 
     @Test
-    public void positiveLogin() throws InterruptedException {
-        // click "Log in" button
-        driver.findElement(By.cssSelector(".text-primary")).click();
-        Thread.sleep(5000);
-        // fill email field
-        WebElement emailField = driver.findElement(By.id("user"));
-        emailField.click();
-        emailField.sendKeys("benhakhenn@gmail.com");
-        Thread.sleep(2000);
-        // press "Log in with Atlassian"
-        driver.findElement(By.id("login")).click();
-        Thread.sleep(4000);
-
-        // enter my own password
-        WebElement enterPassword = driver.findElement(By.id("password"));
-        enterPassword.click();
-        enterPassword.sendKeys("windozesax");
-        Thread.sleep(2000);
-
-        // press log in button
-        driver.findElement(By.id("login-submit")).click();
-        Thread.sleep(12000);
+    public void positiveLogin() {
+//      loginPage.fillInEmailField(LOGIN);
+//      loginPage.pressLoginAsAttlButton();
+//      loginPage.fillInPasswordAttl(PASSWORD);
+//      loginPage.submitLoginAttl(); // press Atlassian log in button
+        loginPage.loginAttl(LOGIN, PASSWORD); //this method replaces 4 methods above
+        boardsPage.waitUntilPageIsLoaded(); // wait for "Boards" button is clickable
+        Assert.assertEquals(boardsPage.getBoardsButtonName(),"Boards", "Name of the button isn't 'Boards'");
     }
 }

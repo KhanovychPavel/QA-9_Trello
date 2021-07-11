@@ -23,6 +23,7 @@ public class BoardsPageHelper extends PageBase {
                     // to the "Board" in workspaces screen
         waitUntilElementIsClickable(By.xpath("(//span[contains(text(), 'Boards')])[3]"), 10); // wait the "Board" is clickable
         driver.findElement(By.xpath("//a[@data-test-id = 'home-team-boards-tab']")).click(); // click the "Board"
+        waitUntilElementIsVisible(By.xpath("//h3[contains(text(),'Your Workspace boards')]"), 10); // wait menu "Your Workspace boards" is visible
     }
 
 }

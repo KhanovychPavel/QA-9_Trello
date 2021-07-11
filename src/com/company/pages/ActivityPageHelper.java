@@ -19,10 +19,11 @@ public class ActivityPageHelper extends PageBase {
         waitUntilAllElementsArePresents(By.cssSelector(".phenom-desc"), 5);
     }
 
-    public void jampTo(String qa_haifa9) {
+    public void jampTo(String boardName) {
         WebElement search = driver.findElement(By.xpath("//input[@data-test-id='header-search-input']"));
-        editField(search, qa_haifa9);
-        search.sendKeys(Keys.ENTER);
+        editField(search, boardName);
+        waitUntilElementIsClickable(By.xpath("(//div[contains(text(), 'boardName')])[3]"), 5);
+        driver.findElement(By.xpath("(//div[contains(text(), 'boardName')])[3]")).click();
     }
 
     public String textReceiveLastListAdded() {

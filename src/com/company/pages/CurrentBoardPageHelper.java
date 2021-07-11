@@ -16,13 +16,12 @@ public class CurrentBoardPageHelper extends PageBase {
     }
 
     public void openPage() {
-//        waitUntilElementIsVisible(By.xpath("//h3[contains(text(),'Your Workspace boards')]"), 10); // wait menu "Your Workspace boards" is visible
         waitUntilElementIsClickable(getLocatorBoardButton(), 20); // wait 'QA Haifa9' board is clickable
         driver.findElement(getLocatorBoardButton()).click(); // click on 'QA Haifa9' board
     }
 
     public By getLocatorBoardButton() {
-        return By.xpath("//a[@class = 'board-tile'][.//div[@title='" + boardName + "']]");
+        return By.xpath("//a[@class = 'board-tile'][.//div[@title='"+boardName+"']]");
     }
 
     public void waitUntilPageIsLoaded() {

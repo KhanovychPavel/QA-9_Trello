@@ -18,7 +18,7 @@ public class ActivityPageTests extends TestBase {
         homePage = new HomePageHelper(driver);
         loginPage = new LoginPageHelper(driver);
         boardsPage = new BoardsPageHelper(driver);
-        qa9HaifaPage = new CurrentBoardPageHelper(driver, "QA9_Haifa");
+        qa9HaifaPage = new CurrentBoardPageHelper(driver, "QA Haifa9");
         menuPage = new MenuPageHelper(driver);
         activityPage = new ActivityPageHelper(driver);
 

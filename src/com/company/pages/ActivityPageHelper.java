@@ -4,30 +4,36 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.FindBy;
+
+import java.util.List;
+
+import static org.openqa.selenium.By.*;
 
 public class ActivityPageHelper extends PageBase {
+    @FindBy(css = ".phenom-desc")
+    List <WebElement> activityList;
+
 
     public ActivityPageHelper(WebDriver driver) {
         this.driver = driver;
     }
 
     public void waitUntilPageIsLoaded() {
-        waitUntilElementIsVisible(By.cssSelector(".mod-wider"), 5);
-    }
-
-    public void waitUntilAllElementsPresents() {
-        waitUntilAllElementsArePresents(By.cssSelector(".phenom-desc"), 5);
-    }
-
-    public void jampTo(String boardName) {
-        WebElement search = driver.findElement(By.xpath("//input[@data-test-id='header-search-input']"));
-        editField(search, boardName);
-        waitUntilElementIsClickable(By.xpath("(//div[contains(text(), 'boardName')])[3]"), 5);
-        driver.findElement(By.xpath("(//div[contains(text(), 'boardName')])[3]")).click();
+        waitUntilAllElementsAreVisible(activityList, 5);
     }
 
     public String textReceiveLastListAdded() {
-        return driver.findElement
-                (By.xpath("(//div[@class='phenom-desc'][contains(text(), 'added list')])[1]")).getText();
+        return activityList.get(0).getText();
+    }
+
+    public boolean textReceiveLastListAddedFromActivity(String listTitle) {
+        boolean res = false;
+        for(WebElement element : activityList) {
+            if(element.getText().contains(listTitle)) {
+                res = true;
+            }
+        }
+        return res;
     }
 }

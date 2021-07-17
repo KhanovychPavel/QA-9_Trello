@@ -3,21 +3,63 @@ package com.company.pages;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.FindBys;
+import org.openqa.selenium.support.PageFactory;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
+import javax.xml.bind.Element;
 import java.util.List;
 
 
 public class CurrentBoardPageHelper extends PageBase {
+    @FindBy(css = ".placeholder")
+    WebElement addAListButton;
+    @FindBy(css = ".js-list-content")
+    List<WebElement> collumnsList;
+    @FindBy(css = ".list-name-input")
+    WebElement enterListTitle;
+    @FindBy(css = ".js-save-edit")
+    WebElement saveListButton;
+    @FindBy(css = ".js-cancel-edit")
+    WebElement cancelNewListButton;
+    @FindBy(css = ".js-card-name")
+    List<WebElement> cardsList;
+    @FindBy(css = ".card-composer-container")
+    WebElement addACard;
+    @FindBy(css = ".js-card-title")
+    WebElement cardTitleField;
+    @FindBy(css = ".js-add-card")
+    WebElement addCard;
+    @FindBy(css = ".js-cancel")
+    WebElement cancelNewCardButton;
+    @FindBy(css = ".list-header-extras-menu")
+    WebElement listActionsButton;
+    @FindBy(css = ".js-close-list")
+    WebElement archiveThisListButton;
+    @FindBy(css = ".js-copy-list")
+    WebElement copyListButton;
+    @FindBy(css = ".js-submit")
+    WebElement createCopyListSubmit;
+    @FindBy(css = ".js-autofocus")
+    WebElement copyListNameField;
+    @FindBy(css = ".list-header-target")
+    List<WebElement> listsTitles;
+
     String boardName;
 
     public CurrentBoardPageHelper(WebDriver driver, String boardName) {
         this.driver = driver;
         this.boardName = boardName;
+        PageFactory.initElements(driver, this);
     }
 
-    public void openPage() {
+    public CurrentBoardPageHelper openPage() {
+        // dynamic element - no fix!!!
         waitUntilElementIsClickable(getLocatorBoardButton(), 20); // wait 'QA Haifa9' board is clickable
         driver.findElement(getLocatorBoardButton()).click(); // click on 'QA Haifa9' board
+        return this;
     }
 
     public By getLocatorBoardButton() {
@@ -25,15 +67,15 @@ public class CurrentBoardPageHelper extends PageBase {
     }
 
     public void waitUntilPageIsLoaded() {
-        waitUntilElementIsClickable(By.cssSelector(".placeholder"), 10); // wait for add list is clickable
+        waitUntilElementIsClickable(addAListButton, 10); // wait for add list is clickable
 
         if (listsQuantity() != 0) {
-            waitUntilAllElementsArePresents(By.cssSelector(".js-list-content"), 10); // wait for all lists elements are present
+            waitUntilAllElementsAreVisible(collumnsList, 10); // wait for all lists elements are present
         }
     }
 
     public int listsQuantity() {
-        return driver.findElements(By.cssSelector(".js-list-content")).size();
+        return collumnsList.size();
     }
 
     public void newListCreating(String listTitle) {
@@ -44,113 +86,96 @@ public class CurrentBoardPageHelper extends PageBase {
     }
 
     public void addNewList() {
-        WebElement createListButton = driver.findElement(By.cssSelector(".placeholder"));
-        createListButton.click(); // press 'Add a list' button
+        addAListButton.click(); // press 'Add a list' button
     }
 
     public void enterNewListTitle(String listTitle) {
-        waitUntilElementIsClickable(By.cssSelector(".js-save-edit"), 10); // wait "add list" button is clickable
-        WebElement nameListField = driver.findElement(By.cssSelector("input[name='name']"));
-        editField(nameListField, listTitle); // enter name of the list
+        waitUntilElementIsClickable(enterListTitle, 10); // wait "add list" button is clickable
+        editField(enterListTitle, listTitle); // enter name of the list
     }
 
     public void createNewListConfirm() {
-        WebElement saveListButton = driver.findElement(By.cssSelector(".js-save-edit"));
+        int sizeBeforeNewListCreating = listsQuantity();
+        waitUntilElementIsClickable(saveListButton, 5);
         saveListButton.click(); // click 'Add list' button
-        waitUntilElementsBecome(By.cssSelector(".js-list-content"), listsQuantity() + 1, 10);
+        waitUntilElementsBecome(By.cssSelector(".js-list-content"), sizeBeforeNewListCreating + 1, 10);
     }
 
     public void cancelElseOneNewListAdding() {
-        waitUntilElementIsClickable(By.cssSelector(".js-cancel-edit"), 10); // wait the 'x' button to cancel new list creating is clickable
-        WebElement cancelListCreatingButton = driver.findElement(By.cssSelector(".js-cancel-edit")); // click 'x' button to cancel new list creating
-        cancelListCreatingButton.click();
-        waitUntilElementIsInvisible(By.cssSelector(".js-cancel-edit"), 10); // wait 'x' button to cancel new list creating going to be invisible
+        waitUntilElementIsClickable(cancelNewListButton, 10); // wait the 'x' button to cancel new list creating is clickable
+        cancelNewListButton.click();
+//        waitUntilElementIsInvisible((By.cssSelector(".list-name-input")), 10); // wait 'enter list title' field going to be invisible
     }
 
 
     public int cardsQuantity() {
-        return driver.findElements(By.cssSelector(".js-card-name")).size();
+        return cardsList.size();
     }
 
 
-    public void addNewCard(int value, String cardTitle) {
+    public void addNewCardToTheFirstList(String cardTitle) {
+        int cardListSizeBeforeAdding = cardsQuantity();
+        addACard.click(); // pressAddACardButton
 
-        pressAddACardButton(value);
-        enterNewCardTitle(cardTitle);
-        pressAddCardButton();
-        cancelCreatingElseOneNewCard();
-    }
+        waitUntilElementIsClickable(cardTitleField, 5); // wait "enter a title for this card..." is clickable
+        editField(cardTitleField, cardTitle); //enterNewCardTitle
+        addCard.click(); // pressAddCardButton (submit card button)
+        waitUntilElementsBecome(By.cssSelector(".js-card-name"), cardListSizeBeforeAdding + 1, 10);
 
-    public void pressAddACardButton(int value) {
-        driver.findElements(By.cssSelector(".js-add-a-card")).get(value).click();
-    }
-
-    public void enterNewCardTitle(String cardTitle) {
-        waitUntilElementIsVisible(By.cssSelector(".js-card-title"), 5); // wait "enter a title for this card..." is visible
-        WebElement cardTitleField = driver.findElement(By.cssSelector(".js-card-title"));
-        editField(cardTitleField, cardTitle);
-    }
-
-    public void pressAddCardButton() {
-        driver.findElement(By.cssSelector(".js-add-card")).click();
-        waitUntilElementsBecome(By.cssSelector(".js-card-name"), cardsQuantity() + 1, 10);
-    }
-
-    public void cancelCreatingElseOneNewCard() {
-        waitUntilElementIsClickable(By.cssSelector(".js-cancel"), 5); // wait 'x' button is clickable
+        waitUntilElementIsClickable(cancelNewCardButton, 10); // wait 'x' button is clickable
         driver.findElement(By.cssSelector(".js-cancel")).click(); // click 'x' button
-        waitUntilElementIsInvisible(By.cssSelector(".js-cancel"), 5); // wait 'x' button going to be invisible
     }
 
-
-    public void getArchiveListByValue(int value) {
-        pressListActionsButtonByValue(value);
+    public void getArchiveFirstList() {
+        pressFirstListActionsButton();
         chooseArchiveThisList();
     }
 
-    public void pressListActionsButtonByValue(int value) {
-        driver.findElements(By.className("list-header-extras")).get(value - 1).click();
+    public void pressFirstListActionsButton() {
+        listActionsButton.click();
     }
 
     public void chooseArchiveThisList() {
-        waitUntilElementIsVisible(By.xpath("//a[@class='js-close-list']/."), 5);
-        driver.findElement(By.xpath("//a[@class='js-close-list']/.")).click();
-        waitUntilElementsBecome(By.cssSelector(".js-list-content"), listsQuantity() - 1, 10);
+        int sizeBeforeArchiving = listsQuantity();
+        waitUntilElementIsClickable(archiveThisListButton, 10);
+        driver.findElement(By.cssSelector(".js-close-list")).click();
+        waitUntilElementsBecome(By.cssSelector(".js-list-content"), sizeBeforeArchiving - 1, 10);
     }
 
 
-    public void getCreatingCopy(int value) {
-        pressListActionsButtonByValue(value);
+    public void getCreatingFirstListCopy() {
+        pressFirstListActionsButton();
         chooseCopyList();
         createCopyListConfirm();
     }
 
     public void chooseCopyList() {
-        waitUntilElementIsVisible(By.xpath("//a[@class='js-copy-list']/."), 10);
-        driver.findElement(By.xpath("//a[contains(text(),'Copy list…')]/..")).click();
+        waitUntilElementIsVisible(copyListButton, 10);
+        copyListButton.click();
     }
 
     public void createCopyListConfirm() {
-        waitUntilElementIsClickable(By.cssSelector(".js-submit"), 5); // waiting for "Create list" button clickable
-        driver.findElement(By.cssSelector(".js-autofocus")).click(); // click on list name field
-        driver.findElement(By.cssSelector(".js-submit")).click();
-        waitUntilElementsBecome(By.cssSelector(".js-list-content"), listsQuantity() + 1, 10);
-    }
-
-    public String textTitleCopy(int value) {
-        return driver.findElements(By.cssSelector(".js-list-name-input")).get(value).getText();
-    }
-
-    public String textTitleOriginal(int value) {
-        return driver.findElements(By.cssSelector(".js-list-name-input")).get(value - 1).getText();
-    }
-
-    public List<WebElement> getListsList() {
-        return driver.findElements(By.cssSelector(".js-list-content"));
+        int sizeBeforeCopying = listsQuantity();
+        waitUntilElementIsClickable(createCopyListSubmit, 5); // waiting for "Create list" button clickable
+        copyListNameField.click(); // click on list name field
+        createCopyListSubmit.click();
+        waitUntilElementsBecome(By.cssSelector(".js-list-content"), sizeBeforeCopying + 1, 10);
     }
 
     public List<WebElement> getListsTitles() {
-        return driver.findElements(By.cssSelector(".list-header-name"));
+        return listsTitles;
+    }
+
+    public String textTitleCopy(int value) {
+        return listsTitles.get(value).getText();
+    }
+
+    public String textTitleOriginal(int value) {
+        return listsTitles.get(value - 1).getText();
+    }
+
+    public List<WebElement> getListsList() {
+        return collumnsList;
     }
 
     public int getNumberOfElements(String name) {
@@ -168,3 +193,10 @@ public class CurrentBoardPageHelper extends PageBase {
 
     }
 }
+
+
+
+//    public void getArchiveListByValue(int value) {
+//        pressListActionsButtonByValue(value);
+//        chooseArchiveThisList();
+//    }

@@ -1,12 +1,13 @@
 package com.company.tests;
 
 import com.company.pages.*;
+import org.openqa.selenium.support.PageFactory;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 public class MenuPageTests extends TestBase {
-    HomePageHelper homePage;
+//    HomePageHelper homePage;
     LoginPageHelper loginPage;
     BoardsPageHelper boardsPage;
     CurrentBoardPageHelper qa9HaifaPage;
@@ -14,22 +15,26 @@ public class MenuPageTests extends TestBase {
 
     @BeforeMethod
     public void initTests() {
-        homePage = new HomePageHelper(driver);
-        loginPage = new LoginPageHelper(driver);
-        boardsPage = new BoardsPageHelper(driver);
+//        homePage = new HomePageHelper(driver);
+        loginPage = PageFactory.initElements(driver, LoginPageHelper.class);
+        boardsPage = PageFactory.initElements(driver, BoardsPageHelper.class);
         qa9HaifaPage = new CurrentBoardPageHelper(driver, "QA Haifa9");
-        menuPage = new MenuPageHelper(driver);
+        menuPage = PageFactory.initElements(driver, MenuPageHelper.class);
 
         homePage.waitUntilPageIsLoaded();
-        loginPage.openPage();
-        loginPage.waitUntilPageIsLoaded();
-        loginPage.loginAttl(LOGIN, PASSWORD);
-        boardsPage.waitUntilPageIsLoaded();
-        boardsPage.boardsButtonInWorkspacesMenuClick();
-        qa9HaifaPage.openPage();
-        qa9HaifaPage.waitUntilPageIsLoaded();
-        menuPage.openPage();
-        menuPage.waitUntilPageIsLoaded();
+        loginPage
+                .openPage()
+                .waitUntilPageIsLoaded()
+                .loginAttl(LOGIN, PASSWORD);
+        boardsPage
+                .waitUntilPageIsLoaded()
+                .boardsButtonInWorkspacesMenuClick();
+        qa9HaifaPage
+                .openPage()
+                .waitUntilPageIsLoaded();
+        menuPage
+                .openPage()
+                .waitUntilPageIsLoaded();
     }
 
     @Test

@@ -3,24 +3,26 @@ package com.company.tests;
 import com.company.pages.BoardsPageHelper;
 import com.company.pages.HomePageHelper;
 import com.company.pages.LoginPageHelper;
+import org.openqa.selenium.support.PageFactory;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 public class LoginTests extends TestBase {
-    HomePageHelper homePage;
+//    HomePageHelper homePage;
     LoginPageHelper loginPage;
     BoardsPageHelper boardsPage;
 
     @BeforeMethod
     public void initTests() {
-        homePage = new HomePageHelper(driver);
-        loginPage = new LoginPageHelper(driver);
-        boardsPage = new BoardsPageHelper(driver);
+ //       homePage = PageFactory.initElements(driver, HomePageHelper.class);
+        loginPage = PageFactory.initElements(driver, LoginPageHelper.class);
+        boardsPage = PageFactory.initElements(driver, BoardsPageHelper.class);
 
         homePage.waitUntilPageIsLoaded(); // wait for "Log in" is clickable ON THE HOMEPAGE
-        loginPage.openPage(); // wait for "Log in" ON THE HOMEPAGE is clickable + find and click on "Log in"
-        loginPage.waitUntilPageIsLoaded(); // wait for "Log in" is clickable ON THE LOG IN PAGE BEFORE EMAIL & PASSWORD FIELDS FILLING
+        loginPage
+                .openPage() // wait for "Log in" ON THE HOMEPAGE is clickable + find and click on "Log in"
+                .waitUntilPageIsLoaded(); // wait for "Log in" is clickable ON THE LOG IN PAGE BEFORE EMAIL & PASSWORD FIELDS FILLING
 
     }
 

@@ -3,28 +3,38 @@ package com.company.pages;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.FindBy;
 
 public class MenuPageHelper extends PageBase {
+    @FindBy(css = ".js-open-header-member-menu")
+    WebElement headerMenuButton;
+    @FindBy(xpath = "//a[@data-test-id='header-member-menu-profile']")
+    WebElement profileAndVisibilityItem;
+    @FindBy(xpath = "(//span[contains (text(), 'Activity')])[2]")
+    WebElement activityItem;
+
 
     public MenuPageHelper(WebDriver driver) {
         this.driver = driver;
     }
 
-    public void openPage() {
-        driver.findElement(By.cssSelector(".js-open-header-member-menu")).click();
+    public MenuPageHelper openPage() {
+        headerMenuButton.click();
+        return this;
     }
 
-    public void waitUntilPageIsLoaded() {
-        waitUntilElementIsClickable(By.xpath("//a[@data-test-id='header-member-menu-profile']"), 5);
+    public MenuPageHelper waitUntilPageIsLoaded() {
+        waitUntilElementIsClickable(profileAndVisibilityItem, 10);
+        return this;
     }
 
     public String getProfileVisibilityMenuName() {
-        return driver.findElement(By.xpath("//a[@data-test-id = 'header-member-menu-profile']")).getText();
+        return profileAndVisibilityItem.getText();
     }
 
-    public void pressActivityMenuItem() {
-        WebElement activity = driver.findElement(By.xpath("(//span[contains (text(), 'Activity')])[2]"));
-        activity.click();
+    public MenuPageHelper openActivityPage() {
+        activityItem.click();
+        return this;
     }
 
 }

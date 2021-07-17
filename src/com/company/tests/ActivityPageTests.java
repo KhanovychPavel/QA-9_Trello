@@ -1,12 +1,13 @@
 package com.company.tests;
 
 import com.company.pages.*;
+import org.openqa.selenium.support.PageFactory;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 public class ActivityPageTests extends TestBase {
-    HomePageHelper homePage;
+//    HomePageHelper homePage;
     LoginPageHelper loginPage;
     BoardsPageHelper boardsPage;
     CurrentBoardPageHelper qa9HaifaPage;
@@ -15,12 +16,12 @@ public class ActivityPageTests extends TestBase {
 
     @BeforeMethod
     public void initTests() {
-        homePage = new HomePageHelper(driver);
-        loginPage = new LoginPageHelper(driver);
-        boardsPage = new BoardsPageHelper(driver);
+//        homePage = new HomePageHelper(driver);
+        loginPage = PageFactory.initElements(driver, LoginPageHelper.class);
+        boardsPage = PageFactory.initElements(driver, BoardsPageHelper.class);
         qa9HaifaPage = new CurrentBoardPageHelper(driver, "QA Haifa9");
-        menuPage = new MenuPageHelper(driver);
-        activityPage = new ActivityPageHelper(driver);
+        menuPage = PageFactory.initElements(driver, MenuPageHelper.class);
+        activityPage = PageFactory.initElements(driver, ActivityPageHelper.class);
 
         homePage.waitUntilPageIsLoaded();
         loginPage.openPage();
@@ -30,25 +31,23 @@ public class ActivityPageTests extends TestBase {
         boardsPage.boardsButtonInWorkspacesMenuClick();
         qa9HaifaPage.openPage();
         qa9HaifaPage.waitUntilPageIsLoaded();
-        menuPage.openPage();
-        menuPage.waitUntilPageIsLoaded();
-        menuPage.pressActivityMenuItem();
-        activityPage.waitUntilPageIsLoaded();
-        activityPage.waitUntilAllElementsPresents();
     }
 
     @Test
     public void confirmInfoNewListCreated() {
-        activityPage.jampTo("QA Haifa9");
         String listTitle = "Sel-14";
-        qa9HaifaPage.newListCreating(listTitle);
-        driver.navigate().back();
+        qa9HaifaPage
+                .newListCreating(listTitle);
+        menuPage
+                .openPage()
+                .waitUntilPageIsLoaded()
+                .openActivityPage();
         activityPage.waitUntilPageIsLoaded();
-        activityPage.waitUntilAllElementsPresents();
 
         Assert.assertTrue(activityPage.textReceiveLastListAdded().contains(listTitle),
-                "Information about the newly created list is not displayed");
-    }
+                "Information about the newly created list isn't displayed. No new list has been created.");
 
+        Assert.assertTrue(activityPage.textReceiveLastListAddedFromActivity(listTitle));
+    }
 
 }
